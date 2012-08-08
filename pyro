@@ -1,0 +1,73 @@
+#!/usr/bin/python
+#  pyro.py
+#  
+#  Dustin Dorroh <dustin.dorroh@decisionsciencescorp.com>
+#  
+import os
+import sys
+import logging
+import logging.handlers
+from ConfigParser import SafeConfigParser
+from shutil import copyfile
+from glob import glob
+import re
+
+def home_expand(string):
+	if re.match(r'[$]HOME', string, flags=0):
+		return re.sub(r'[$]HOME',os.environ['HOME'],string)
+	else:
+		return string
+		
+def main():
+
+	# Set config file
+	if os.path.exists(os.environ['HOME']+'/.pyrorc'):
+		CONFIG_FILE = os.environ['HOME']+'/.pyrorc'
+	elif os.path.exists('/etc/pyrorc'):
+		CONFIG_FILE = '/etc/pyrorc'
+	else:
+		sys.stderr.write("Error: No config file located in /etc/pyrorc or " + os.environ['HOME']+'/.pyrorc\n')
+		return 1
+
+
+	parser = SafeConfigParser()
+	parser.read(CONFIG_FILE)
+
+	rotated_logger = logging.getLogger('pyroLogger')
+
+	# Setup handlers
+	for section_name in parser.sections():
+		# Check if file exists
+		if os.path.exists(home_expand(parser.get(section_name, 'file'))):
+			# Backup file
+			copyfile(home_expand(parser.get(section_name, 'file')),
+				home_expand(parser.get(section_name, 'file'))+'~')
+			# Create handler
+			handler = logging.handlers.TimedRotatingFileHandler(
+				home_expand(parser.get(section_name, 'file')), 
+				backupCount=int(parser.get(section_name,'backupCount')))
+			# Add handler to logger
+			rotated_logger.addHandler(handler)
+		else:
+			print "Skipping %s. File does not Exist" % home_expand(parser.get(section_name, 'file'))
+
+	# Roll files over
+	for  handler in rotated_logger.handlers.__iter__():
+		handler.doRollover()
+
+	# Copy backups back to original file because doRollover() clears the file
+	for section_name in parser.sections():
+		# Check if file exists
+		if os.path.exists(home_expand(parser.get(section_name, 'file'))):
+			copyfile(home_expand(parser.get(section_name, 'file'))+'~',
+				home_expand(parser.get(section_name, 'file')))
+
+	for section_name in parser.sections():
+		# See what files are created
+		if os.path.exists(home_expand(parser.get(section_name, 'file'))):
+			logfiles = glob('%s*' % home_expand(parser.get(section_name, 'file')))
+			for filename in logfiles:
+				print filename
+
+if __name__ == "__main__":
+	main()
