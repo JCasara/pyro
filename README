@@ -1,0 +1,10 @@
+Example of a crontab
+
+ddorroh@towelie:~/git/pyro
+$ crontab -l
+MAILTO="dustin.dorroh@decisionsciencescorp.com"
+0 0 * * * /home/ddorroh/bin/pyro.py
+
+
+This will rotate every night at midnight.
+
