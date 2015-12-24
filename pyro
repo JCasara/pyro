@@ -4,30 +4,26 @@
 #  Dustin Dorroh <dustin.dorroh@decisionsciencescorp.com>
 #  
 import os
-import sys
-import logging
 import logging.handlers
 from ConfigParser import SafeConfigParser
 from shutil import copyfile
 from glob import glob
-import re
+import errno
+import string
 
-def home_expand(string):
-	if re.match(r'[$]HOME', string, flags=0):
-		return re.sub(r'[$]HOME',os.environ['HOME'],string)
-	else:
-		return string
-		
 def main():
 
 	# Set config file
-	if os.path.exists(os.environ['HOME']+'/.pyrorc'):
-		CONFIG_FILE = os.environ['HOME']+'/.pyrorc'
-	elif os.path.exists('/etc/pyrorc'):
-		CONFIG_FILE = '/etc/pyrorc'
+	local_config = os.path.join(os.environ['HOME'],'.pyrorc')
+	global_config = '/etc/pyrorc'
+	
+	if os.path.isfile(local_config):
+		CONFIG_FILE = local_config
+	elif os.path.isfile(global_config):
+		CONFIG_FILE = global_config
 	else:
-		sys.stderr.write("Error: No config file located in /etc/pyrorc or " + os.environ['HOME']+'/.pyrorc\n')
-		return 1
+		msg = 'No config file located in {local_config} or {global_config}'.format(local_config=local_config,global_config=global_config)
+		raise OSError(errno.ENOENT,msg)
 
 
 	parser = SafeConfigParser()
@@ -38,34 +34,34 @@ def main():
 	# Setup handlers
 	for section_name in parser.sections():
 		# Check if file exists
-		if os.path.exists(home_expand(parser.get(section_name, 'file'))):
+		file_path = string.Template(parser.get(section_name, 'file')).substitute(**os.environ)
+		if os.path.exists(file_path):
 			# Backup file
-			copyfile(home_expand(parser.get(section_name, 'file')),
-				home_expand(parser.get(section_name, 'file'))+'~')
+			copyfile(file_path, file_path + '~')
 			# Create handler
-			handler = logging.handlers.TimedRotatingFileHandler(
-				home_expand(parser.get(section_name, 'file')), 
-				backupCount=int(parser.get(section_name,'backupCount')))
+			backupCount = int(parser.get(section_name,'backupCount'))
+			handler = logging.handlers.TimedRotatingFileHandler(file_path, when='S', backupCount=backupCount)
 			# Add handler to logger
 			rotated_logger.addHandler(handler)
 		else:
-			print "Skipping %s. File does not Exist" % home_expand(parser.get(section_name, 'file'))
+			print "Skipping %s. File does not Exist" % file_path
 
 	# Roll files over
-	for  handler in rotated_logger.handlers.__iter__():
+	for handler in rotated_logger.handlers:
 		handler.doRollover()
 
 	# Copy backups back to original file because doRollover() clears the file
 	for section_name in parser.sections():
+		file_path = string.Template(parser.get(section_name, 'file')).substitute(**os.environ)
 		# Check if file exists
-		if os.path.exists(home_expand(parser.get(section_name, 'file'))):
-			copyfile(home_expand(parser.get(section_name, 'file'))+'~',
-				home_expand(parser.get(section_name, 'file')))
+		if os.path.exists(file_path):
+			copyfile(file_path+'~',file_path)
 
 	for section_name in parser.sections():
+		file_path = string.Template(parser.get(section_name, 'file')).substitute(**os.environ)
 		# See what files are created
-		if os.path.exists(home_expand(parser.get(section_name, 'file'))):
-			logfiles = glob('%s*' % home_expand(parser.get(section_name, 'file')))
+		if os.path.exists(file_path):
+			logfiles = sorted(glob('%s.????-??-??_??-??-??' % file_path))
 			for filename in logfiles:
 				print filename
 

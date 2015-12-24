@@ -1,14 +1,14 @@
 # file - file name to rollover
 # backupCount - at most backupCount files will be kept (0 means no limit)
 
-# [example1]
-# file = /tmp/example1
-# backupCount = 0
-
-# [example2]
-# file = $HOME/.example2
-# backupCount = 0
-
 [bash]
 file = $HOME/.bash_history
+backupCount = 0
+
+[bashrc]
+file = $HOME/.bashrc
+backupCount = 0
+
+[bash_aliases]
+file = $HOME/.bash_aliases
 backupCount = 0
