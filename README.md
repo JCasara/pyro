@@ -11,7 +11,7 @@ sudo python setup.py install
 ## Setup crontab to rotate periodically
 This will rotate every night at midnight.
 ```
-$ crontab -l
+$ crontab -e
 0 0 * * * /usr/local/bin/pyro
 ```
 ## Modify Config
