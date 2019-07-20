@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #  pyro.py
 #  
-#  Dustin Dorroh <dustin.dorroh@decisionsciencescorp.com>
+#  Dustin Dorroh <dustindorroh@gmail.com>
 #  
 import os
 import logging.handlers

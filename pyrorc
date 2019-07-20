@@ -5,10 +5,3 @@
 file = $HOME/.bash_history
 backupCount = 0
 
-[bashrc]
-file = $HOME/.bashrc
-backupCount = 0
-
-[bash_aliases]
-file = $HOME/.bash_aliases
-backupCount = 0
