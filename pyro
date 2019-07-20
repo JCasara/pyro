@@ -5,7 +5,7 @@
 #  
 import os
 import logging.handlers
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from shutil import copyfile
 from glob import glob
 import errno
@@ -44,7 +44,7 @@ def main():
 			# Add handler to logger
 			rotated_logger.addHandler(handler)
 		else:
-			print "Skipping %s. File does not Exist" % file_path
+			print("Skipping %s. File does not Exist" % file_path)
 
 	# Roll files over
 	for handler in rotated_logger.handlers:
@@ -63,7 +63,7 @@ def main():
 		if os.path.exists(file_path):
 			logfiles = sorted(glob('%s.????-??-??_??-??-??' % file_path))
 			for filename in logfiles:
-				print filename
+				print(filename)
 
 if __name__ == "__main__":
 	main()
