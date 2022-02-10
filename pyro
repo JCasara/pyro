@@ -5,7 +5,7 @@
 #  
 import os
 import logging.handlers
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 from shutil import copyfile
 from glob import glob
 import errno
@@ -26,7 +26,7 @@ def main():
 		raise OSError(errno.ENOENT,msg)
 
 
-	parser = SafeConfigParser()
+	parser = ConfigParser()
 	parser.read(CONFIG_FILE)
 
 	rotated_logger = logging.getLogger('pyroLogger')
