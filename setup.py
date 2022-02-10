@@ -7,7 +7,7 @@
 from distutils.core import setup
 
 setup(name='pyro',
-	version='0.2',
+	version='0.3',
 	description='Python file rotater',
 	author='Dustin Dorroh',
 	author_email='dustin.dorroh@decisionsciencescorp.com',
