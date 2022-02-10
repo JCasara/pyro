@@ -22,9 +22,10 @@ $ cat /etc/pyrorc
 # backupCount - at most backupCount files will be kept (0 means no limit)
 
 [bash]
-file = $HOME/.bash_history
+file = $HOME/bash_history/.bash_history
 backupCount = 0
 
 ```
-
-
+## Add new .bash_history location to /etc/profile
+echo "# Move .bash_history location" | sudo tee -a /etc/profile
+echo "export HISTFILE=/home/$USER/.bash_history" | sudo tee -a /etc/profile
