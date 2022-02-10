@@ -29,5 +29,5 @@ backupCount = 0
 ## Add new .bash_history location to /etc/profile
 ```bash
 echo "# Move .bash_history location" | sudo tee -a /etc/profile
-echo "export HISTFILE=/home/$USER/.bash_history" | sudo tee -a /etc/profile
+echo "export HISTFILE=$HOME/bash_history/.bash_history" | sudo tee -a /etc/profile
 ```
