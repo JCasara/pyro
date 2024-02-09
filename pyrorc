@@ -2,6 +2,7 @@
 # backupCount - at most backupCount files will be kept (0 means no limit)
 
 [bash]
-file = $HOME/bash_history/.bash_history
+#file = $HOME/bash_history/.bash_history
+file = $HOME/zsh_history/.zsh_history
 backupCount = 0
 
